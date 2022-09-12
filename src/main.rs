@@ -1,13 +1,12 @@
 use halo2_proofs::circuit::Value;
 use halo2_proofs::{
     arithmetic::FieldExt,
-    circuit::{Cell, Chip, Layouter, SimpleFloorPlanner},
+    circuit::{Cell, Layouter, SimpleFloorPlanner},
     plonk::{
         Advice, Assigned, Circuit, Column, ConstraintSystem, Error, Fixed, Instance,
     },
     poly::Rotation,
 };
-use pairing::group::ff::Field;
 use std::marker::PhantomData;
 
 #[allow(non_snake_case, dead_code)]
@@ -316,4 +315,8 @@ fn main() {
     let prover = MockProver::run(k, &circuit, vec![public_inputs.clone()]).unwrap();
 
     assert_eq!(prover.verify(), Ok(()));
+
+    public_inputs[0] += Fp::one();
+    let prover = MockProver::run(k, &circuit, vec![public_inputs]).unwrap();
+    assert!(prover.verify().is_err());
 }
